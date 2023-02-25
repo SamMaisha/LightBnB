@@ -21,6 +21,13 @@ Lighthouse BnB is an app that will revolutionize the travel industry. It will al
 - nodemon
 - pg
 
+## Setting up DB
+
+- run 'psql' in terminal and run command `CREATE DATABASE lightbnb`
+- run command `\c lightbnb` to get into the database
+- from psql session, type `\i migrations/01_schema.sql` - this will create all the necessary tables
+- type `i/seeds/01_seeds.sql` , `i/seeds/02_seeds.sql` to populate tables with the seed data
+
 ## Getting Started
 
 - Install all dependencies (using the `npm install` command).
