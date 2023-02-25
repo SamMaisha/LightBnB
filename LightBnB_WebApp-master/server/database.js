@@ -38,11 +38,14 @@ exports.getUserWithEmail = getUserWithEmail;
  */
 const getUserWithId = function (id) {
   const queryString = `
-  SELECT id, name, email, FROM users
+  SELECT id, name, email 
+  FROM users
   WHERE id = $1`;
   const queryParams = [id];
 
-  return pool.query(queryString, queryParams).then((result) => {
+  return pool
+  .query(queryString, queryParams)
+  .then((result) => {
     if (result.rows[0] === 0) {
       return null;
     }
@@ -63,7 +66,9 @@ const addUser = function (user) {
   RETURNING *
   `;
   queryParams = [user.name, user.email, user.password];
-  return pool.query(queryString, queryParams).then((result) => {
+  return pool
+  .query(queryString, queryParams)
+  .then((result) => {
     return result.rows[0];
   });
 };
@@ -78,10 +83,12 @@ exports.addUser = addUser;
  */
 const getAllReservations = function (guest_id, limit = 10) {
   const queryString = `
-  SELECT properties.*, reservations.*
+  SELECT properties.*, reservations.*, avg(property_reviews.rating) as average_rating
   FROM properties 
-  JOIN reservations ON properties.id = property_id
-  WHERE guest_id = $1
+  JOIN reservations ON properties.id = reservations.property_id
+  JOIN property_reviews on properties.id = property_reviews.property_id
+  WHERE reservations.guest_id = $1
+  GROUP BY properties.id, reservations.id
   LIMIT $2
   `;
   const queryParams = [guest_id, limit];
@@ -172,7 +179,7 @@ const addProperty = function (property) {
     property.description,
     property.thumbnail_photo_url,
     property.cover_photo_url,
-    property.cost_per_night,
+    property.cost_per_night * 100,
     property.parking_spaces,
     property.number_of_bathrooms,
     property.number_of_bedrooms,
